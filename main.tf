@@ -27,10 +27,10 @@ module "amazon_connect" {
   #     time_zone   = "America/New_York"
   #     description = "Always open"
   #     config = [
-  #       for d in ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"] : {
+  #       for d in ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"] : {
   #         day        = d
-  #         start_time = { hours = 0, minutes = 0 }
-  #         end_time   = { hours = 23, minutes = 59 }
+  #         start_time = { hours = 7, minutes = 0 }
+  #         end_time   = { hours = 18, minutes = 59 }
   #       }
   #     ]
   #   }
