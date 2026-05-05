@@ -1,0 +1,9 @@
+region         = "us-east-1"
+instance_alias = "kwade-callcenter"
+
+agent_email    = "kylehamwey2010@gmail.com"
+agent_password = "ChangeMe!2026"
+
+lex_bot_name         = "KylesWebsiteBot"
+lex_bot_version      = "V2"
+lex_v2_bot_alias_arn = ""
