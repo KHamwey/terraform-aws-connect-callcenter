@@ -1,0 +1,327 @@
+{
+  "Version": "2019-10-30",
+  "StartAction": "826a12d8-4183-41e5-9ac0-baaabf387a1c",
+  "Metadata": {
+    "entryPointPosition": {
+      "x": 40,
+      "y": 40
+    },
+    "ActionMetadata": {
+      "826a12d8-4183-41e5-9ac0-baaabf387a1c": {
+        "position": {
+          "x": 164.8,
+          "y": 39.2
+        },
+        "parameters": {
+          "TextToSpeechVoice": {
+            "languageCode": "en-US"
+          }
+        },
+        "overrideConsoleVoice": false
+      },
+      "b175bee5-b3ee-4ce6-9f74-a4f1834020aa": {
+        "position": {
+          "x": 440.8,
+          "y": 124
+        },
+        "parameters": {
+          "HoursOfOperationId": {
+            "displayName": "BusinessHours"
+          }
+        },
+        "Hours": {
+          "id": "arn:aws:connect:us-east-1:528757806846:instance/6ea4190b-3cd7-43ee-90d6-559cb25059dd/operating-hours/94c3cb5d-21f6-4d3f-be88-235db5ecdde3",
+          "text": "BusinessHours"
+        }
+      },
+      "8ac96119-8e1e-4768-9664-0f57a76740d7": {
+        "position": {
+          "x": 1115.2,
+          "y": 644
+        }
+      },
+      "41ea66a8-e837-4e66-96fa-67c9964b3688": {
+        "position": {
+          "x": 773.6,
+          "y": 100
+        }
+      },
+      "eda408ba-59ab-4a6f-9c50-61c0c4ca4524": {
+        "position": {
+          "x": 1102.4,
+          "y": 203.2
+        },
+        "parameters": {
+          "ThirdPartyPhoneNumber": {
+            "countryCode": "US"
+          }
+        },
+        "CountryCode": "us"
+      },
+      "db2a1a32-9406-4b43-b9e9-91f7e4b8cccc": {
+        "position": {
+          "x": 2100,
+          "y": 793.6
+        }
+      },
+      "bcd5e31b-8719-4149-89b9-066d2ec85813": {
+        "position": {
+          "x": 732.8,
+          "y": 949.6
+        }
+      },
+      "c0e2b4ca-2cee-49de-8a44-79448ed0ecf3": {
+        "position": {
+          "x": 1448,
+          "y": 565.6
+        },
+        "parameters": {
+          "LexV2Bot": {
+            "AliasArn": {
+              "displayName": "TestBotAlias",
+              "useLexBotDropdown": true,
+              "lexV2BotName": "KylesWebsiteBot"
+            }
+          }
+        },
+        "useLexBotDropdown": true,
+        "lexV2BotName": "KylesWebsiteBot",
+        "lexV2BotAliasName": "TestBotAlias",
+        "conditionMetadata": [
+          {
+            "id": "de782302-17ae-419d-a1bd-d0c7a5d434a3",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "WelcomeIntent"
+          },
+          {
+            "id": "f888657d-eb0f-4d1d-b3d8-f6c2f90e77ca",
+            "operator": {
+              "name": "Equals",
+              "value": "Equals",
+              "shortDisplay": "="
+            },
+            "value": "ProvideResume"
+          }
+        ]
+      },
+      "f51a12ed-830a-4ac8-b15c-a655dff8757b": {
+        "position": {
+          "x": 1785.6,
+          "y": 668
+        },
+        "dynamicParams": []
+      }
+    },
+    "Annotations": []
+  },
+  "Actions": [
+    {
+      "Parameters": {
+        "TextToSpeechVoice": "Joanna"
+      },
+      "Identifier": "826a12d8-4183-41e5-9ac0-baaabf387a1c",
+      "Type": "UpdateContactTextToSpeechVoice",
+      "Transitions": {
+        "NextAction": "b175bee5-b3ee-4ce6-9f74-a4f1834020aa",
+        "Errors": [
+          {
+            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "HoursOfOperationId": "arn:aws:connect:us-east-1:528757806846:instance/6ea4190b-3cd7-43ee-90d6-559cb25059dd/operating-hours/94c3cb5d-21f6-4d3f-be88-235db5ecdde3"
+      },
+      "Identifier": "b175bee5-b3ee-4ce6-9f74-a4f1834020aa",
+      "Type": "CheckHoursOfOperation",
+      "Transitions": {
+        "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+        "Conditions": [
+          {
+            "NextAction": "41ea66a8-e837-4e66-96fa-67c9964b3688",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "True"
+              ]
+            }
+          },
+          {
+            "NextAction": "8ac96119-8e1e-4768-9664-0f57a76740d7",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "False"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Sorry, you've reached Kyle outside business hours. Let me grab a few details and he'll get back to you as soon as possible."
+      },
+      "Identifier": "8ac96119-8e1e-4768-9664-0f57a76740d7",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "c0e2b4ca-2cee-49de-8a44-79448ed0ecf3",
+        "Errors": [
+          {
+            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Hi, this is Kyle's line. Please hold while I connect you to him directly."
+      },
+      "Identifier": "41ea66a8-e837-4e66-96fa-67c9964b3688",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "eda408ba-59ab-4a6f-9c50-61c0c4ca4524",
+        "Errors": [
+          {
+            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "ThirdPartyPhoneNumber": "+13862042362",
+        "ThirdPartyConnectionTimeLimitSeconds": "30",
+        "ContinueFlowExecution": "True",
+        "CallerId": {
+          "Name": "Portfolio Site"
+        }
+      },
+      "Identifier": "eda408ba-59ab-4a6f-9c50-61c0c4ca4524",
+      "Type": "TransferParticipantToThirdParty",
+      "Transitions": {
+        "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+        "Errors": [
+          {
+            "NextAction": "8ac96119-8e1e-4768-9664-0f57a76740d7",
+            "ErrorType": "CallFailed"
+          },
+          {
+            "NextAction": "8ac96119-8e1e-4768-9664-0f57a76740d7",
+            "ErrorType": "ConnectionTimeLimitExceeded"
+          },
+          {
+            "NextAction": "8ac96119-8e1e-4768-9664-0f57a76740d7",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "Text": "Got it. Kyle will reach out within one business day. Thanks for calling."
+      },
+      "Identifier": "db2a1a32-9406-4b43-b9e9-91f7e4b8cccc",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+        "Errors": [
+          {
+            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "Text": "Please tell me your name, the best way to reach you, and a brief message. For example, you can say \"I'd like Kyle's resume.\"",
+        "LexV2Bot": {
+          "AliasArn": "arn:aws:lex:us-east-1:528757806846:bot-alias/YPUBHWXZVM/TSTALIASID"
+        }
+      },
+      "Identifier": "c0e2b4ca-2cee-49de-8a44-79448ed0ecf3",
+      "Type": "ConnectParticipantWithLexBot",
+      "Transitions": {
+        "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+        "Conditions": [
+          {
+            "NextAction": "f51a12ed-830a-4ac8-b15c-a655dff8757b",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "WelcomeIntent"
+              ]
+            }
+          },
+          {
+            "NextAction": "f51a12ed-830a-4ac8-b15c-a655dff8757b",
+            "Condition": {
+              "Operator": "Equals",
+              "Operands": [
+                "ProvideResume"
+              ]
+            }
+          }
+        ],
+        "Errors": [
+          {
+            "NextAction": "f51a12ed-830a-4ac8-b15c-a655dff8757b",
+            "ErrorType": "NoMatchingCondition"
+          },
+          {
+            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "Attributes": {
+          "caller_name": "Lex.Slots.Name",
+          "caller_email": "Lex.Slots.Email",
+          "caller_phone": "Lex.Slots.Phone",
+          "caller_message": "Lex.Slots.Message",
+          "matched_intent": "Lex.IntentName"
+        },
+        "TargetContact": "Current"
+      },
+      "Identifier": "f51a12ed-830a-4ac8-b15c-a655dff8757b",
+      "Type": "UpdateContactAttributes",
+      "Transitions": {
+        "NextAction": "db2a1a32-9406-4b43-b9e9-91f7e4b8cccc",
+        "Errors": [
+          {
+            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    }
+  ]
+}

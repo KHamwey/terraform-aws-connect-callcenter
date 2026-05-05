@@ -92,15 +92,21 @@ module "amazon_connect" {
   #   }
   # } : {}
 
-  # ---- Step 6: contact flow JSON (uncomment in Step 6) -------------------
-  # contact_flows = {
-  #   "InboundMain" = {
-  #     type         = "CONTACT_FLOW"
-  #     description  = "Main inbound entry point"
-  #     filename     = "${path.module}/flows/inbound_main.json"
-  #     content_hash = filebase64sha256("${path.module}/flows/inbound_main.json")
-  #   }
-  # }
+  # ---- Step 6: contact flow JSON ------------------------------------------
+  # The flow itself was authored in the Connect Console (visual designer)
+  # and exported via `aws connect describe-contact-flow`. Bringing it under
+  # Terraform management via `terraform import` is the recommended path here
+  # because (a) authoring complex flows in JSON by hand is brittle, and
+  # (b) the AWS Connect API does not allow flows to be deleted, so importing
+  # avoids a destroy/recreate cycle.
+  contact_flows = {
+    "InboundMain" = {
+      type         = "CONTACT_FLOW"
+      description  = "Main inbound entry: in-hours forwards to cell, after-hours captures Lex slots"
+      filename     = "${path.module}/flows/inbound_main.json"
+      content_hash = filebase64sha256("${path.module}/flows/inbound_main.json")
+    }
+  }
 }
 
 ################################################################################
