@@ -25,7 +25,7 @@ module "amazon_connect" {
   hours_of_operations = {
     "BusinessHours" = {
       time_zone   = "America/New_York"
-      description = "M-F 7am - 7pm ET"
+      description = "M-F 7AM - 7PM ET"
       config = [
         for d in ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"] : {
           day        = d
