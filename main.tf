@@ -105,32 +105,48 @@ module "amazon_connect" {
 
 ################################################################################
 # Lex V2 wiring — only created if var.lex_bot_version == "V2"
-# Allows Amazon Connect to invoke the Lex V2 bot alias.
-# (V2 bots are referenced by ARN inside the contact flow JSON; there is no
-#  Connect-side association resource for V2.)
+#
+# Lex V2 bots cannot use aws_connect_bot_association (that resource is V1-only).
+# Instead, we attach a resource-based policy to the bot alias allowing the
+# Connect service principal to invoke it. The bot is then referenced by its
+# alias ARN inside the contact flow JSON (Step 6).
+#
+# Note: hashicorp/aws does not yet have an aws_lexv2models_resource_policy
+# resource, so we use the awscc provider, which auto-generates from
+# AWS::Lex::ResourcePolicy CloudFormation schema.
 ################################################################################
 
-# resource "aws_lexv2models_bot_alias" "connect_invoke" { ... }
-#
-# data "aws_iam_policy_document" "lex_v2_invoke" {
-#   count = var.lex_bot_version == "V2" ? 1 : 0
-#
-#   statement {
-#     actions   = ["lex:RecognizeText", "lex:RecognizeUtterance", "lex:StartConversation"]
-#     resources = [var.lex_v2_bot_alias_arn]
-#     principals {
-#       type        = "Service"
-#       identifiers = ["connect.amazonaws.com"]
-#     }
-#     condition {
-#       test     = "StringEquals"
-#       variable = "AWS:SourceAccount"
-#       values   = [data.aws_caller_identity.current.account_id]
-#     }
-#     condition {
-#       test     = "ArnEquals"
-#       variable = "AWS:SourceArn"
-#       values   = [module.amazon_connect.instance.arn]
-#     }
-#   }
-# }
+data "aws_iam_policy_document" "lex_v2_invoke" {
+  count = var.lex_bot_version == "V2" ? 1 : 0
+
+  statement {
+    sid    = "AllowConnectToInvokeLexBot"
+    effect = "Allow"
+    actions = [
+      "lex:RecognizeText",
+      "lex:RecognizeUtterance",
+      "lex:StartConversation",
+    ]
+    resources = [var.lex_v2_bot_alias_arn]
+    principals {
+      type        = "Service"
+      identifiers = ["connect.amazonaws.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+    condition {
+      test     = "ArnEquals"
+      variable = "AWS:SourceArn"
+      values   = [module.amazon_connect.instance.arn]
+    }
+  }
+}
+
+resource "awscc_lex_resource_policy" "connect_invoke" {
+  count        = var.lex_bot_version == "V2" ? 1 : 0
+  resource_arn = var.lex_v2_bot_alias_arn
+  policy       = data.aws_iam_policy_document.lex_v2_invoke[0].json
+}
