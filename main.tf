@@ -21,66 +21,68 @@ module "amazon_connect" {
   instance_outbound_calls_enabled    = true
   instance_contact_flow_logs_enabled = true
 
-  # ---- Step 4: queue + agent (uncomment in Step 4) ------------------------
-  # hours_of_operations = {
-  #   "24x7" = {
-  #     time_zone   = "America/New_York"
-  #     description = "Always open"
-  #     config = [
-  #       for d in ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"] : {
-  #         day        = d
-  #         start_time = { hours = 7, minutes = 0 }
-  #         end_time   = { hours = 18, minutes = 59 }
-  #       }
-  #     ]
-  #   }
-  # }
-  #
-  # queues = {
-  #   "BasicQueue" = {
-  #     description           = "Default inbound queue"
-  #     hours_of_operation_id = try(module.amazon_connect.hours_of_operations["24x7"].hours_of_operation_id, null)
-  #   }
-  # }
-  #
-  # routing_profiles = {
-  #   "BasicRoutingProfile" = {
-  #     description               = "Default routing"
-  #     default_outbound_queue_id = try(module.amazon_connect.queues["BasicQueue"].queue_id, null)
-  #     media_concurrencies       = [{ channel = "VOICE", concurrency = 1 }]
-  #     queue_configs = [{
-  #       channel  = "VOICE"
-  #       delay    = 0
-  #       priority = 1
-  #       queue_id = try(module.amazon_connect.queues["BasicQueue"].queue_id, null)
-  #     }]
-  #   }
-  # }
-  #
-  # security_profiles = {
-  #   "CallCenterAgent" = {
-  #     description = "Inbound voice agent"
-  #     permissions = ["BasicAgentAccess", "OutboundCallAccess"]
-  #   }
-  # }
-  #
-  # users = {
-  #   "agent1" = {
-  #     password = var.agent_password
-  #     identity_info = {
-  #       email      = var.agent_email
-  #       first_name = "Kyle"
-  #       last_name  = "Wade"
-  #     }
-  #     phone_config = {
-  #       phone_type                    = "SOFT_PHONE"
-  #       after_contact_work_time_limit = 0
-  #       auto_accept                   = false
-  #     }
-  #     routing_profile_id   = try(module.amazon_connect.routing_profiles["BasicRoutingProfile"].routing_profile_id, null)
-  #     security_profile_ids = [try(module.amazon_connect.security_profiles["CallCenterAgent"].security_profile_id, null)]
-  #   }
-  # }
+  # ---- Step 4: queue + agent ----------------------------------------------
+  hours_of_operations = {
+    "BusinessHours" = {
+      time_zone   = "America/New_York"
+      description = "M-F 7am - 7pm ET"
+      config = [
+        for d in ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"] : {
+          day        = d
+          start_time = { hours = 7, minutes = 0 }
+          end_time   = { hours = 18, minutes = 59 }
+        }
+      ]
+    }
+  }
+
+  # NOTE: Connect auto-creates a default queue named "BasicQueue" when the
+  # instance is provisioned, so we use a distinct name here.
+  queues = {
+    "MainInboundQueue" = {
+      description           = "Primary inbound queue routed by InboundMain flow"
+      hours_of_operation_id = try(module.amazon_connect.hours_of_operations["BusinessHours"].hours_of_operation_id, null)
+    }
+  }
+
+  routing_profiles = {
+    "InboundVoiceRoutingProfile" = {
+      description               = "Voice-only routing for inbound agents"
+      default_outbound_queue_id = try(module.amazon_connect.queues["MainInboundQueue"].queue_id, null)
+      media_concurrencies       = [{ channel = "VOICE", concurrency = 1 }]
+      queue_configs = [{
+        channel  = "VOICE"
+        delay    = 0
+        priority = 1
+        queue_id = try(module.amazon_connect.queues["MainInboundQueue"].queue_id, null)
+      }]
+    }
+  }
+
+  security_profiles = {
+    "CallCenterAgent" = {
+      description = "Inbound voice agent"
+      permissions = ["BasicAgentAccess", "OutboundCallAccess"]
+    }
+  }
+
+  users = {
+    "agent1" = {
+      password = var.agent_password
+      identity_info = {
+        email      = var.agent_email
+        first_name = "Kyle"
+        last_name  = "Hamwey"
+      }
+      phone_config = {
+        phone_type                    = "SOFT_PHONE"
+        after_contact_work_time_limit = 0
+        auto_accept                   = false
+      }
+      routing_profile_id   = try(module.amazon_connect.routing_profiles["InboundVoiceRoutingProfile"].routing_profile_id, null)
+      security_profile_ids = [try(module.amazon_connect.security_profiles["CallCenterAgent"].security_profile_id, null)]
+    }
+  }
 
   # ---- Step 5: Lex bot association (V1 only — uncomment in Step 5) -------
   # bot_associations = var.lex_bot_version == "V1" ? {
