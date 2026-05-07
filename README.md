@@ -41,7 +41,7 @@ Reference: [`aws-ia/amazonconnect/aws ~> 0.0.1`](https://github.com/aws-ia/terra
 
 ## What this repo demonstrates
 
-For interview / portfolio context — this hits every line of the Optum "Lead AI/ML Engineer — AWS Connect" job description:
+For interview / portfolio context — this hits every line of most of the "AWS Connect" job descriptions:
 
 - ✅ **Amazon Connect contact flows (IVR & chat)**: visual flow with branching on hours of operation, Lex slot collection, transfer to cell, voicemail-style data capture
 - ✅ **Lex V2 integration**: bot alias resource policy granting `connect.amazonaws.com` invoke rights, scoped to this instance via `SourceArn` condition; bot referenced by alias ARN inside the contact flow JSON
