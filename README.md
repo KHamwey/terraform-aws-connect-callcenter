@@ -85,10 +85,16 @@ Common pattern when AWS releases a new feature: the awscc provider auto-generate
 | 4 | Contact flow | `aws_connect_contact_flow` (imported from console-built flow) | `terraform plan` shows zero drift |
 | 5 | Phone number | claimed manually in Console | Inbound test call routes correctly |
 
+## Account access
+
+- **Day-to-day:** IAM Identity Center user `KyleHamwey`, AWS CLI profile `KyleHamwey`. Run `aws sso login --profile KyleHamwey` when the SSO session expires, then use `terraform` / `aws` with that profile (for example `export AWS_PROFILE=KyleHamwey` or `--profile KyleHamwey`).
+- **Emergency:** IAM user `break-glass-admin` — console sign-in and password live in a password vault only. Use if Identity Center is unavailable; not for routine Terraform or daily work.
+- **Root:** No root access keys. Root MFA enabled. Use the root login only for rare account-level actions AWS reserves for root.
+
 ## First-time setup (clean account)
 
 ```bash
-# 1. AWS CLI authenticated; region us-east-1
+# 1. AWS CLI authenticated (SSO: aws sso login --profile KyleHamwey); region us-east-1
 aws sts get-caller-identity
 
 # 2. Lex V2 bot exists in the same region/account
