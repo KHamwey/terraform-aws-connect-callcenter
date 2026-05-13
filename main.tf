@@ -133,7 +133,7 @@ data "aws_iam_policy_document" "lex_v2_invoke" {
       "lex:RecognizeUtterance",
       "lex:StartConversation",
     ]
-    resources = [var.lex_v2_bot_alias_arn]
+    resources = [var.lex_v2_connect_bot_alias_arn]
     principals {
       type        = "Service"
       identifiers = ["connect.amazonaws.com"]
@@ -153,6 +153,6 @@ data "aws_iam_policy_document" "lex_v2_invoke" {
 
 resource "awscc_lex_resource_policy" "connect_invoke" {
   count        = var.lex_bot_version == "V2" ? 1 : 0
-  resource_arn = var.lex_v2_bot_alias_arn
+  resource_arn = var.lex_v2_connect_bot_alias_arn
   policy       = data.aws_iam_policy_document.lex_v2_invoke[0].json
 }

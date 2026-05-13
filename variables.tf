@@ -47,8 +47,24 @@ variable "lex_bot_version" {
   }
 }
 
-variable "lex_v2_bot_alias_arn" {
-  description = "Lex V2 bot alias ARN, e.g. arn:aws:lex:us-east-1:123456789012:bot-alias/ABCD1234/EFGH5678. Required only when lex_bot_version = 'V2'."
+variable "lex_v2_connect_bot_alias_arn" {
+  description = "Lex V2 bot alias ARN for Amazon Connect (IVR / KylesWebsiteBot). Used by awscc_lex_resource_policy and must match the Lex block in flows/inbound_main.json."
   type        = string
   default     = ""
+
+  validation {
+    condition     = var.lex_bot_version != "V2" || length(trimspace(var.lex_v2_connect_bot_alias_arn)) > 0
+    error_message = "Set lex_v2_connect_bot_alias_arn when lex_bot_version is V2."
+  }
+}
+
+variable "lex_v2_web_chat_bot_alias_arn" {
+  description = "Lex V2 bot alias ARN for the portfolio web chat widget (KylesWebsiteChatBot). Used by Cognito unauth IAM and terraform outputs for REACT_APP_LEX_*."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.lex_bot_version != "V2" || length(trimspace(var.lex_v2_web_chat_bot_alias_arn)) > 0
+    error_message = "Set lex_v2_web_chat_bot_alias_arn when lex_bot_version is V2."
+  }
 }

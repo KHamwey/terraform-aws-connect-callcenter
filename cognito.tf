@@ -5,7 +5,7 @@
 # credentials from this unauthenticated Cognito Identity Pool, which assume
 # the cognito_unauth IAM role. That role has narrowly-scoped permission to
 # call Lex V2 RecognizeText / RecognizeUtterance / session APIs against the
-# KylesWebsiteBot alias only.
+# web chat bot alias (KylesWebsiteChatBot) only.
 #
 # Flow:
 #   browser --> cognito.GetId / GetCredentialsForIdentity (no auth)
@@ -14,11 +14,11 @@
 ################################################################################
 
 locals {
-  # Parse bot ID + alias ID from the alias ARN
+  # Parse chat bot ID + alias ID from the web-chat alias ARN (React env / outputs).
   # arn:aws:lex:us-east-1:<acct>:bot-alias/<botId>/<aliasId>
-  lex_v2_bot_alias_arn_parts = split("/", var.lex_v2_bot_alias_arn)
-  lex_v2_bot_id              = local.lex_v2_bot_alias_arn_parts[1]
-  lex_v2_bot_alias_id        = local.lex_v2_bot_alias_arn_parts[2]
+  lex_v2_web_chat_arn_parts    = split("/", var.lex_v2_web_chat_bot_alias_arn)
+  lex_v2_web_chat_bot_id       = local.lex_v2_web_chat_arn_parts[1]
+  lex_v2_web_chat_bot_alias_id = local.lex_v2_web_chat_arn_parts[2]
 }
 
 resource "aws_cognito_identity_pool" "web_chat" {
@@ -66,7 +66,7 @@ resource "aws_iam_role" "cognito_unauth" {
 # if you want a strict least-privilege text-only setup.
 data "aws_iam_policy_document" "cognito_unauth_lex" {
   statement {
-    sid    = "InvokeKylesWebsiteBot"
+    sid    = "InvokeWebChatLexBot"
     effect = "Allow"
     actions = [
       "lex:RecognizeText",
@@ -76,7 +76,7 @@ data "aws_iam_policy_document" "cognito_unauth_lex" {
       "lex:PutSession",
       "lex:DeleteSession",
     ]
-    resources = [var.lex_v2_bot_alias_arn]
+    resources = [var.lex_v2_web_chat_bot_alias_arn]
   }
 }
 

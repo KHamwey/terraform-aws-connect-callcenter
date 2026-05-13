@@ -19,18 +19,6 @@
         },
         "CountryCode": "us"
       },
-      "826a12d8-4183-41e5-9ac0-baaabf387a1c": {
-        "position": {
-          "x": 164.8,
-          "y": 39.2
-        },
-        "parameters": {
-          "TextToSpeechVoice": {
-            "languageCode": "en-US"
-          }
-        },
-        "overrideConsoleVoice": true
-      },
       "41ea66a8-e837-4e66-96fa-67c9964b3688": {
         "position": {
           "x": 1644,
@@ -56,18 +44,6 @@
         "Hours": {
           "id": "arn:aws:connect:us-east-1:528757806846:instance/6ea4190b-3cd7-43ee-90d6-559cb25059dd/operating-hours/94c3cb5d-21f6-4d3f-be88-235db5ecdde3",
           "text": "BusinessHours"
-        }
-      },
-      "8ac96119-8e1e-4768-9664-0f57a76740d7": {
-        "position": {
-          "x": 428,
-          "y": 124
-        }
-      },
-      "bcd5e31b-8719-4149-89b9-066d2ec85813": {
-        "position": {
-          "x": 1034.4,
-          "y": 925.6
         }
       },
       "f51a12ed-830a-4ac8-b15c-a655dff8757b": {
@@ -113,7 +89,7 @@
         "lexV2BotAliasName": "TestBotAlias",
         "conditionMetadata": [
           {
-            "id": "2145006b-04f6-496c-a988-d73bdab5324a",
+            "id": "4541e391-0813-4a2b-a9b2-abb57df38075",
             "operator": {
               "name": "Equals",
               "value": "Equals",
@@ -122,6 +98,30 @@
             "value": "WelcomeIntent"
           }
         ]
+      },
+      "bcd5e31b-8719-4149-89b9-066d2ec85813": {
+        "position": {
+          "x": 1034.4,
+          "y": 925.6
+        }
+      },
+      "8ac96119-8e1e-4768-9664-0f57a76740d7": {
+        "position": {
+          "x": 428,
+          "y": 124
+        }
+      },
+      "826a12d8-4183-41e5-9ac0-baaabf387a1c": {
+        "position": {
+          "x": 164.8,
+          "y": 39.2
+        },
+        "parameters": {
+          "TextToSpeechVoice": {
+            "languageCode": "en-US"
+          }
+        },
+        "overrideConsoleVoice": true
       }
     },
     "Annotations": []
@@ -149,24 +149,6 @@
             "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
             "ErrorType": "ConnectionTimeLimitExceeded"
           },
-          {
-            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Parameters": {
-        "TextToSpeechVoice": "Joanna",
-        "TextToSpeechEngine": "Neural",
-        "TextToSpeechStyle": "Newscaster"
-      },
-      "Identifier": "826a12d8-4183-41e5-9ac0-baaabf387a1c",
-      "Type": "UpdateContactTextToSpeechVoice",
-      "Transitions": {
-        "NextAction": "8ac96119-8e1e-4768-9664-0f57a76740d7",
-        "Errors": [
           {
             "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
             "ErrorType": "NoMatchingError"
@@ -246,29 +228,6 @@
     },
     {
       "Parameters": {
-        "SkipWhenDTMFBufferEnabled": "false",
-        "SSML": "Hello! You have reached Kyles A.I. Assistant Jules. I am named After Jules Verne, the author. Kyle would like to grab some contact information before we move forward. "
-      },
-      "Identifier": "8ac96119-8e1e-4768-9664-0f57a76740d7",
-      "Type": "MessageParticipant",
-      "Transitions": {
-        "NextAction": "c0e2b4ca-2cee-49de-8a44-79448ed0ecf3",
-        "Errors": [
-          {
-            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
-            "ErrorType": "NoMatchingError"
-          }
-        ]
-      }
-    },
-    {
-      "Parameters": {},
-      "Identifier": "bcd5e31b-8719-4149-89b9-066d2ec85813",
-      "Type": "DisconnectParticipant",
-      "Transitions": {}
-    },
-    {
-      "Parameters": {
         "Attributes": {
           "caller_name": "$.Lex.Slots.CallerName",
           "caller_phone": "$.Lex.Slots.CallerPhone",
@@ -290,7 +249,7 @@
     },
     {
       "Parameters": {
-        "SSML": "I wam going to grab some contact  information now in case we get disconnected, is that okay?",
+        "SSML": "Is that okay?",
         "LexV2Bot": {
           "AliasArn": "arn:aws:lex:us-east-1:528757806846:bot-alias/YPUBHWXZVM/TSTALIASID"
         }
@@ -315,6 +274,47 @@
             "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
             "ErrorType": "NoMatchingCondition"
           },
+          {
+            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {},
+      "Identifier": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+      "Type": "DisconnectParticipant",
+      "Transitions": {}
+    },
+    {
+      "Parameters": {
+        "SkipWhenDTMFBufferEnabled": "false",
+        "SSML": "Hello! You have reached Kyles A.I. Assistant Jules. I am named After Jules Verne, the author. Kyle would like to grab some contact information before we move forward. "
+      },
+      "Identifier": "8ac96119-8e1e-4768-9664-0f57a76740d7",
+      "Type": "MessageParticipant",
+      "Transitions": {
+        "NextAction": "c0e2b4ca-2cee-49de-8a44-79448ed0ecf3",
+        "Errors": [
+          {
+            "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "TextToSpeechVoice": "Joanna",
+        "TextToSpeechEngine": "Neural",
+        "TextToSpeechStyle": "Conversational"
+      },
+      "Identifier": "826a12d8-4183-41e5-9ac0-baaabf387a1c",
+      "Type": "UpdateContactTextToSpeechVoice",
+      "Transitions": {
+        "NextAction": "8ac96119-8e1e-4768-9664-0f57a76740d7",
+        "Errors": [
           {
             "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
             "ErrorType": "NoMatchingError"

@@ -33,13 +33,13 @@ output "cognito_identity_pool_id" {
 }
 
 output "lex_bot_id" {
-  description = "Lex V2 bot ID. Use as REACT_APP_LEX_BOT_ID."
-  value       = local.lex_v2_bot_id
+  description = "Web chat Lex V2 bot ID (KylesWebsiteChatBot). Use as REACT_APP_LEX_BOT_ID."
+  value       = local.lex_v2_web_chat_bot_id
 }
 
 output "lex_bot_alias_id" {
-  description = "Lex V2 bot alias ID. Use as REACT_APP_LEX_BOT_ALIAS_ID."
-  value       = local.lex_v2_bot_alias_id
+  description = "Web chat Lex V2 bot alias ID. Use as REACT_APP_LEX_BOT_ALIAS_ID."
+  value       = local.lex_v2_web_chat_bot_alias_id
 }
 
 output "lex_locale_id" {

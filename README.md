@@ -2,7 +2,7 @@
 
 A free-tier-friendly Amazon Connect call center deployed via Terraform. Built incrementally so each layer can be verified in the AWS Console before the next is stacked.
 
-**Live demo number**: `+1 877-424-6658` (toll-free) — call any time during M-F 7am-7pm ET to be transferred to my cell after a brief Lex-driven intake. After hours, the same Lex bot collects your name/phone/email/message and disconnects with a callback promise.
+**Live demo number**: `+1 877-424-6658` (toll-free) — call any time during M-F 7am–7pm ET to be transferred to my cell after a brief Lex-driven intake. After hours, the same **voice** Lex bot (`KylesWebsiteBot`) collects your name/phone/email/message and disconnects with a callback promise.
 
 ## Architecture
 
@@ -11,14 +11,17 @@ flowchart LR
     Caller([PSTN Caller]) -->|"+1 877-424-6658"| Flow[InboundMain Contact Flow]
     Flow --> Voice[Set voice: Joanna]
     Voice --> Hours{"Check Hours of Operation<br/>BusinessHours: M-F 7-19 ET"}
-    Hours -->|InHours| LexA[Lex V2: KylesWebsiteBot<br/>collects name/phone/email/message]
+    Hours -->|InHours| LexA[Lex V2: KylesWebsiteBot<br/>voice IVR]
     LexA --> Greet[Play prompt: connecting...]
     Greet --> Transfer[Transfer to cell +1 386-204-2362]
-    Hours -->|AfterHours| LexB[Lex V2: KylesWebsiteBot<br/>collects name/phone/email/message]
+    Hours -->|AfterHours| LexB[Lex V2: KylesWebsiteBot<br/>voice IVR]
     LexB --> Attrs[Set Contact Attributes from Lex slots]
     Attrs --> Bye[Play prompt: callback promise]
     Bye --> End([Disconnect])
     Transfer -.->|on error| LexB
+
+    Site([Portfolio site]) --> ChatLex[Lex V2: KylesWebsiteChatBot<br/>web chat only]
+```
 ```
 
 Reference: [`aws-ia/amazonconnect/aws ~> 0.0.1`](https://github.com/aws-ia/terraform-aws-amazonconnect).
@@ -35,16 +38,18 @@ Reference: [`aws-ia/amazonconnect/aws ~> 0.0.1`](https://github.com/aws-ia/terra
 | Routing Profile | `InboundVoiceRoutingProfile` (VOICE, concurrency 1) |
 | Security Profile | `CallCenterAgent` |
 | User | `agent1` / Kyle Hamwey |
-| Lex bot | `KylesWebsiteBot` (V2, alias `TestBotAlias`, ID `YPUBHWXZVM`) |
+| Lex bot (IVR / Connect) | `KylesWebsiteBot` (V2, alias `TestBotAlias`, ID `YPUBHWXZVM`) |
+| Lex bot (portfolio web chat) | `KylesWebsiteChatBot` (V2; `terraform output lex_bot_id` for `REACT_APP_LEX_BOT_ID`) |
 | Contact Flow | `InboundMain` (`9bbcd0b0-02d4-4c9a-88d1-c786a2348bca`) |
-| Lex resource policy | Attached to bot alias, scoped via `AWS:SourceArn` to this instance |
+| Lex resource policy (Connect) | Attached to **KylesWebsiteBot** alias, scoped via `AWS:SourceArn` to this instance |
+| Cognito web chat | Identity pool grants `lex:*` session APIs on **KylesWebsiteChatBot** alias only |
 
 ## What this repo demonstrates
 
 For interview / portfolio context — this hits every line of most of the "AWS Connect" job descriptions:
 
 - ✅ **Amazon Connect contact flows (IVR & chat)**: visual flow with branching on hours of operation, Lex slot collection, transfer to cell, voicemail-style data capture
-- ✅ **Lex V2 integration**: bot alias resource policy granting `connect.amazonaws.com` invoke rights, scoped to this instance via `SourceArn` condition; bot referenced by alias ARN inside the contact flow JSON
+- ✅ **Lex V2 integration**: (1) Connect invokes **`KylesWebsiteBot`** via alias resource policy scoped to this instance; (2) portfolio chat uses **`KylesWebsiteChatBot`** with Cognito unauth IAM on that bot alias only; contact flow JSON references the voice bot alias
 - ✅ **Routing, queues, hours of operation**: declarative via Terraform, dependent resources resolved through the AWS-IA module's flatten pattern
 - ✅ **Decoupled design (Connect → Lambda → APIs)**: the Lambda layer is the obvious next step; the bot's slot data lands as `Contact Attributes`, ready to be picked up by a `aws_connect_lambda_function_association` for backend dispatch (Slack notification, CRM upsert, calendar invite, etc.)
 - ✅ **High availability / monitoring**: Connect is multi-AZ by default in us-east-1; `instance_contact_flow_logs_enabled = true` ships flow execution logs to CloudWatch Logs
