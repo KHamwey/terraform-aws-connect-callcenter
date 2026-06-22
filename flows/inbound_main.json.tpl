@@ -31,6 +31,17 @@
           "y": 638.4
         }
       },
+      "7f3a9c2e-1b4d-4e8a-9c6f-2d8e5a1b3c7d": {
+        "position": {
+          "x": 1480,
+          "y": 540
+        },
+        "parameters": {
+          "LambdaFunctionARN": {
+            "displayName": "AfterHoursNotifier"
+          }
+        }
+      },
       "b175bee5-b3ee-4ce6-9f74-a4f1834020aa": {
         "position": {
           "x": 1316.8,
@@ -221,6 +232,23 @@
         "Errors": [
           {
             "NextAction": "bcd5e31b-8719-4149-89b9-066d2ec85813",
+            "ErrorType": "NoMatchingError"
+          }
+        ]
+      }
+    },
+    {
+      "Parameters": {
+        "LambdaFunctionARN": "${lambda_function_arn}",
+        "InvocationTimeLimitSeconds": "8"
+      },
+      "Identifier": "7f3a9c2e-1b4d-4e8a-9c6f-2d8e5a1b3c7d",
+      "Type": "InvokeLambdaFunction",
+      "Transitions": {
+        "NextAction": "db2a1a32-9406-4b43-b9e9-91f7e4b8cccc",
+        "Errors": [
+          {
+            "NextAction": "db2a1a32-9406-4b43-b9e9-91f7e4b8cccc",
             "ErrorType": "NoMatchingError"
           }
         ]

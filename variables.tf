@@ -48,7 +48,7 @@ variable "lex_bot_version" {
 }
 
 variable "lex_v2_connect_bot_alias_arn" {
-  description = "Lex V2 bot alias ARN for Amazon Connect (IVR / KylesWebsiteBot). Used by awscc_lex_resource_policy and must match the Lex block in flows/inbound_main.json."
+  description = "Lex V2 bot alias ARN for Amazon Connect (IVR / KylesWebsiteBot). Used by awscc_lex_resource_policy and must match the Lex block in flows/inbound_main.json.tpl."
   type        = string
   default     = ""
 
@@ -56,6 +56,22 @@ variable "lex_v2_connect_bot_alias_arn" {
     condition     = var.lex_bot_version != "V2" || length(trimspace(var.lex_v2_connect_bot_alias_arn)) > 0
     error_message = "Set lex_v2_connect_bot_alias_arn when lex_bot_version is V2."
   }
+}
+
+# ----------------------------------------------------------------------------
+# After-hours email notification (Lambda + SES)
+# ----------------------------------------------------------------------------
+
+variable "notification_email" {
+  description = "Recipient for after-hours callback emails. Must be verified in SES if the account is still in sandbox."
+  type        = string
+  default     = ""
+}
+
+variable "ses_from_email" {
+  description = "Verified SES sender address for after-hours notification emails."
+  type        = string
+  default     = ""
 }
 
 variable "lex_v2_web_chat_bot_alias_arn" {

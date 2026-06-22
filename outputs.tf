@@ -51,3 +51,8 @@ output "aws_region" {
   description = "AWS region (matches what the widget needs)."
   value       = var.region
 }
+
+output "after_hours_notifier_lambda_arn" {
+  description = "Lambda ARN invoked by InboundMain on the after-hours path."
+  value       = aws_lambda_function.after_hours_notification.arn
+}

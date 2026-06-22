@@ -2,7 +2,7 @@
 
 Free-tier-friendly Amazon Connect call center deployed via Terraform. Built incrementally so each layer can be verified in the AWS Console before the next is stacked.
 
-**Live demo**: `+1 877-424-6658` (toll-free) — M-F 7am–7pm ET transfers to my cell after a brief Lex IVR. After hours, **KylesWebsiteBot** collects name/phone/message and disconnects with a callback promise.
+**Live demo**: `+1 877-424-6658` (toll-free) — M-F 7am–7pm ET transfers to my cell after a brief Lex IVR. After hours, **KylesWebsiteBot** collects name/phone/message, emails the details via Lambda + SES, then disconnects with a callback promise.
 
 ## Architecture
 
@@ -14,7 +14,9 @@ flowchart LR
     LexA --> Transfer[Transfer to cell]
     Hours -->|AfterHours| LexB[KylesWebsiteBot voice IVR]
     LexB --> Attrs[Set Contact Attributes from Lex slots]
-    Attrs --> Bye[Callback promise + disconnect]
+    Attrs --> Lambda[After-hours Lambda]
+    Lambda --> SES[SES email]
+    Lambda --> Bye[Callback promise + disconnect]
     Transfer -.->|on error| LexB
 
     Site([Portfolio site]) --> ChatLex[KylesWebsiteChatBot web chat]
@@ -38,8 +40,9 @@ Connect module: [`aws-ia/amazonconnect/aws ~> 0.0.1`](https://github.com/aws-ia/
 
 ```
 .
-├── main.tf, cognito.tf, variables.tf, outputs.tf
-├── flows/inbound_main.json   # console-exported flow, content-hashed for drift detection
+├── main.tf, cognito.tf, lambda.tf, variables.tf, outputs.tf
+├── lambda/after_hours_notifier.js
+├── flows/inbound_main.json.tpl   # Lambda ARN injected at apply time
 └── terraform.tfvars.example
 ```
 
@@ -53,9 +56,11 @@ terraform init && terraform plan -out tfplan && terraform apply tfplan
 
 **Cleanup note**: Connect won't delete queues/hours/security profiles via API — `terraform state rm` those resources before `terraform destroy`. Release phone numbers in Console first.
 
+**SES note**: If your account is in the SES sandbox, verify both `ses_from_email` and `notification_email` (Terraform creates identities; click the verification links in your inbox).
+
 ## Roadmap
 
-- [ ] **Lambda + SES (in progress)**: `aws_connect_lambda_function_association` + handler to read after-hours Contact Attributes (`caller_name`, `caller_phone`, `caller_message` from Lex slots) and send email via SES
+- [x] **Lambda + SES**: after-hours Contact Attributes (`caller_name`, `caller_phone`, `caller_message`) emailed via Lambda + SES
 - [x] **Portfolio web chat**: Cognito identity pool, `KylesWebsiteChatBot`, Terraform outputs → Amplify env vars → LexChat widget live on [React-Portfolio](https://github.com/KHamwey/React-Portfolio)
 - [ ] **CI/CD**: GitHub Actions — `terraform plan` on PR, apply on merge, OIDC auth
 - [ ] **Remote state**: S3 + DynamoDB lock table

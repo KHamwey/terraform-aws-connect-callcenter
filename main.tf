@@ -10,6 +10,12 @@
 # Module reference: https://github.com/aws-ia/terraform-aws-amazonconnect
 ################################################################################
 
+locals {
+  inbound_main_flow_content = templatefile("${path.module}/flows/inbound_main.json.tpl", {
+    lambda_function_arn = aws_lambda_function.after_hours_notification.arn
+  })
+}
+
 module "amazon_connect" {
   source  = "aws-ia/amazonconnect/aws"
   version = "~> 0.0.1"
@@ -102,10 +108,14 @@ module "amazon_connect" {
   contact_flows = {
     "InboundMain" = {
       type         = "CONTACT_FLOW"
-      description  = "Main inbound entry: in-hours forwards to cell, after-hours captures Lex slots"
-      filename     = "${path.module}/flows/inbound_main.json"
-      content_hash = filebase64sha256("${path.module}/flows/inbound_main.json")
+      description  = "Main inbound entry: in-hours forwards to cell, after-hours captures Lex slots and emails via Lambda"
+      content      = local.inbound_main_flow_content
+      content_hash = base64sha256(local.inbound_main_flow_content)
     }
+  }
+
+  lambda_function_associations = {
+    after_hours_notifier = aws_lambda_function.after_hours_notification.arn
   }
 }
 
