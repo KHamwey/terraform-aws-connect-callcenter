@@ -23,7 +23,7 @@ resource "aws_ses_email_identity" "notification_to" {
 
 data "aws_iam_policy_document" "after_hours_notifier_assume" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
     principals {
       type        = "Service"

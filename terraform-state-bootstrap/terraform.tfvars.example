@@ -1,0 +1,4 @@
+region      = "us-east-1"
+prefix      = "kwade-callcenter-demo"
+github_org  = "KHamwey"
+github_repo = "terraform-aws-connect-callcenter"
