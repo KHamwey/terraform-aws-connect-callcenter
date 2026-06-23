@@ -92,21 +92,14 @@ Confirm migration when prompted. Local `terraform.tfstate` moves to S3.
 
 ### 3. GitHub repository settings
 
-**Secrets** (Settings → Secrets and variables → Actions):
+**Secrets** (Settings → Secrets and variables → Actions → **Secrets**):
 
 | Secret | Value |
 |---|---|
-| `AWS_ROLE_ARN` | `terraform output -raw github_actions_role_arn` from bootstrap |
-| `TF_VAR_agent_password` | Same as local `terraform.tfvars` |
+| `AWS_ROLE_ARN` | `arn:aws:iam::528757806846:role/kwade-callcenter-demo-github-actions-terraform` |
+| `TF_VAR_agent_password` | Same as local `terraform.tfvars` (`agent_password`) |
 
-**Variables** (repository variables):
-
-| Variable | Value |
-|---|---|
-| `TF_STATE_BUCKET` | e.g. `kwade-callcenter-demo-tfstate-528757806846` |
-| `TF_LOCK_TABLE` | e.g. `kwade-callcenter-demo-tflock` |
-
-Non-secret `TF_VAR_*` values are set in [`.github/workflows/terraform.yml`](.github/workflows/terraform.yml).
+State bucket and lock table names are hardcoded in the workflow (not secret).
 
 ### 4. Workflow behavior
 

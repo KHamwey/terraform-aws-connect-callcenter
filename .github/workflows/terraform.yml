@@ -18,6 +18,8 @@ concurrency:
 env:
   TF_IN_AUTOMATION: true
   AWS_REGION: us-east-1
+  TF_STATE_BUCKET: kwade-callcenter-demo-tfstate-528757806846
+  TF_LOCK_TABLE: kwade-callcenter-demo-tflock
   TF_VAR_region: us-east-1
   TF_VAR_instance_alias: kwade-callcenter-demo
   TF_VAR_agent_email: kylehamwey2010@gmail.com
@@ -27,6 +29,7 @@ env:
   TF_VAR_lex_bot_version: V2
   TF_VAR_lex_v2_connect_bot_alias_arn: arn:aws:lex:us-east-1:528757806846:bot-alias/YPUBHWXZVM/TSTALIASID
   TF_VAR_lex_v2_web_chat_bot_alias_arn: arn:aws:lex:us-east-1:528757806846:bot-alias/JLUYWTIOVK/TSTALIASID
+  TF_VAR_agent_password: ${{ secrets.TF_VAR_agent_password }}
 
 jobs:
   terraform:
@@ -34,6 +37,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Verify GitHub secrets
+        run: |
+          if [ -z "${{ secrets.AWS_ROLE_ARN }}" ]; then
+            echo "::error::Missing repository secret AWS_ROLE_ARN"
+            exit 1
+          fi
+          if [ -z "${{ secrets.TF_VAR_agent_password }}" ]; then
+            echo "::error::Missing repository secret TF_VAR_agent_password"
+            exit 1
+          fi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -49,10 +63,10 @@ jobs:
       - name: Terraform init
         run: |
           terraform init -input=false \
-            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="bucket=${TF_STATE_BUCKET}" \
             -backend-config="key=connect-callcenter/terraform.tfstate" \
-            -backend-config="region=${{ env.AWS_REGION }}" \
-            -backend-config="dynamodb_table=${{ vars.TF_LOCK_TABLE }}" \
+            -backend-config="region=${AWS_REGION}" \
+            -backend-config="dynamodb_table=${TF_LOCK_TABLE}" \
             -backend-config="encrypt=true"
 
       - name: Terraform format
@@ -63,13 +77,10 @@ jobs:
 
       - name: Terraform plan
         id: plan
-        run: |
-          terraform plan -input=false -no-color -out=tfplan \
-            -var="agent_password=${{ secrets.TF_VAR_agent_password }}"
-        continue-on-error: true
+        run: terraform plan -input=false -no-color -out=tfplan
 
       - name: Comment plan on PR
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.plan.outcome == 'success'
         uses: actions/github-script@v7
         env:
           PLAN_OUTCOME: ${{ steps.plan.outcome }}
@@ -90,10 +101,6 @@ jobs:
               repo: context.repo.repo,
               body
             });
-
-      - name: Fail if plan failed
-        if: steps.plan.outcome == 'failure'
-        run: exit 1
 
       - name: Terraform apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
